@@ -31,7 +31,7 @@ flags.DEFINE_boolean('temperature_anneal', False, 'if anneal for temperature')
 
 flags.DEFINE_string('rnn_cell_type', 'lstm', 'number layer of rnn')
 flags.DEFINE_string('yelp_set', 'FULL', 'yelp set version: FULL or BINARY')
-flags.DEFINE_string('rnn_model', "leap-lstm", "rnn cell to use： skip-rnn-2017, lbyl-lstm, rnn")
+flags.DEFINE_string('rnn_model', "leap-lstm", "rnn cell to use： skip-rnn-2017, leap-lstm, rnn")
 
 flags.DEFINE_float("mask_rate_for_training", 0.0, "mask rate for the schedule training")
 flags.DEFINE_float('gpu_rate', '0.9', 'how much gpu to use')
@@ -56,13 +56,14 @@ def main(argv):
     print("use gpu: ", FLAGS.gpu, " gpu rate:, ", FLAGS.gpu_rate)
     print("learning rate: ", FLAGS.learning_rate, " save epoch: ", FLAGS.save_epoch, "check_step: ", FLAGS.check_step)
     print("temperature_anneal:", FLAGS.temperature_anneal, " initial temperature: ", FLAGS.temperature)
-
+    
+    # here data path needs to be modified
     if FLAGS.yelp_set == 'BINARY':
         FLAGS.nb_classes = 2
-        data_source = {'text': '/home/ht/SkipText/Yelp/yelp.p', 'glove': '/home/ht/SkipText/Yelp/yelp_glove.p'}
+        data_source = {'text': './data/Yelp/yelp.p', 'glove': './data/Yelp/yelp_glove.p'}
     elif FLAGS.yelp_set == 'FULL':
         FLAGS.nb_classes = 5
-        data_source = {'text': '/home/ht/SkipText/Yelp/yelp_full.p', 'glove': '/home/ht/SkipText/Yelp/yelp_full_glove.p'}
+        data_source = {'text': './data/Yelp/yelp_full.p', 'glove': './data/Yelp/yelp_full_glove.p'}
 
     # load yelp(FULL/BINARY) data set
     data = data_help_yelp.YelpData(data_source=data_source, nb_classes=FLAGS.nb_classes, type=FLAGS.yelp_set, LENGTH_LIMIT=FLAGS.max_sentence_length)
@@ -133,7 +134,7 @@ def main(argv):
                 #     FLAGS.mask_rate_for_training = FLAGS.mask_rate_for_training - 0.15 # 0.3, 0.15, 0.0
                 #     print("mask rate for training: ", FLAGS.mask_rate_for_training)
                 if FLAGS.temperature_anneal:
-                    sess.run(model.assign_temperature)  # 退火
+                    sess.run(model.assign_temperature)
                     print("Current trmperature: ", sess.run(model.temperature))
         if FLAGS.if_schedule == 1:
                 FLAGS.mask_rate_for_training = FLAGS.mask_rate_for_training - 0.15 # 0.3, 0.15, 0.0
@@ -157,7 +158,7 @@ def main(argv):
 
 
 def train_step(sess, model, data, idx):
-    # 准备 batch 数据
+    # prepare batch data
     batch, lengths, labels = data.get_batch(idx, FLAGS.batch_size, type='train')
     batch = mask_lstm_inputs(batch, FLAGS.mask_rate_for_training)    # shcedule-training
     masks = get_input_mask(batch)
@@ -212,7 +213,6 @@ def evaluate(sess, model, data, type):
             step_updated_states = sess.run([model.updated_states], feed_dict)[0]
             all_updated_states.append(step_updated_states)
             all_masks.append(masks)
-            # 需要知道它的形状
             # print(step_updated_states.shape)  # (None, length, 1)
        
     average_loss = sum_loss / nb_samples
