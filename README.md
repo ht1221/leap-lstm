@@ -35,5 +35,8 @@ python train_classifier_yelp.py --rnn_model leap-lstm --yelp_set FULL \
 ```
 The details of arguments can be found in skiplstm.py
 
+
+
 ## other things
-Note that here we also provide the reproduction of [skip-rnn](https://arxiv.org/abs/1708.06834) and [skim-rnn](https://arxiv.org/abs/1711.02085).
+- tensorflow 1.11, maybe 1.12/1.13 is also okay
+- Note that here we also provide the reproduction of [skip-rnn](https://arxiv.org/abs/1708.06834) and [skim-rnn](https://arxiv.org/abs/1711.02085).
