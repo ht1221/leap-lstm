@@ -1,5 +1,5 @@
 # coding: utf-8
-# author: huang ting
+# author: Ting Huang
 import pickle as pkl
 import numpy as np
 
@@ -91,8 +91,8 @@ class YelpData(object):
 
 
 if __name__ == '__main__':
-    yelp = YelpData(data_source={'text': '/home/ht/SkipText/Yelp/yelp_full.p',
-                                      'glove': '/home/ht/SkipText/Yelp/yelp_full_glove.p'},
+    # data path needs to be modified
+    yelp = YelpData(data_source={'text': './data/Yelp/yelp_full.p', 'glove': './data/Yelp/yelp_full_glove.p'},
                          nb_classes=5,
                          type='FULL')
     print("load yelp full successfully")
